@@ -1,0 +1,33 @@
+{
+    "name": "steppinghat/symfony-d7-notifier",
+    "type": "symfony-notifier-bridge",
+    "description": "Provides D7 networks integration for Symfony Notifier",
+    "keywords": ["sms", "d7", "d7networks", "notifier", "symfony"],
+    "license": "MIT",
+    "homepage": "https://github.com/steppinghat/symfony-d7-notifier",
+    "authors": [
+        {
+            "name": "Javan Eskander",
+            "homepage": "https://javaneskander.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.4",
+        "ext-json": "*",
+        "symfony/event-dispatcher": "^5.4",
+        "symfony/http-client": "^5.4",
+        "symfony/notifier": "^5.4",
+        "giggsey/libphonenumber-for-php": "^8.0"
+    },
+    "require-dev": {
+        "symfony/phpunit-bridge": "^6.0",
+        "phpunit/phpunit": "^9.5"
+    },
+    "autoload": {
+        "psr-4": { "SteppingHat\\D7Notifier\\": "" },
+        "exclude-from-classmap": [
+            "/Tests/"
+        ]
+    },
+    "minimum-stability": "dev"
+}
