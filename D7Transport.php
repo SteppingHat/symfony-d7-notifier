@@ -77,9 +77,8 @@ class D7Transport extends AbstractTransport {
             }
         }
 
-        if(strlen($message->getSubject()) > self::MAX_LENGTH) {
-            throw new UnsupportedMessageLengthException($message, self::MAX_LENGTH);
-        }
+        $body = ['from' => $this->from, 'to' => $phoneNumber];
+        $body = array_merge($body, $this->getRequestContent($message->getSubject()));
 
         $endpoint = sprintf('https://%s/secure/send', $this->getEndpoint());
         $response = $this->client->request('POST', $endpoint, [
@@ -87,11 +86,7 @@ class D7Transport extends AbstractTransport {
                 'Content-Type' => 'application/json',
                 'Authorization' => 'Basic '. $this->authToken
             ],
-            'body' => json_encode([
-                'from' => $this->from,
-                'content' => $message->getSubject(),
-                'to' => $phoneNumber
-            ])
+            'body' => json_encode($body)
         ]);
 
         try {
@@ -101,7 +96,12 @@ class D7Transport extends AbstractTransport {
         }
 
         if($statusCode < 200 || $statusCode > 208) {
-            throw new TransportException(sprintf('Unable to send SMS: Status %s', $statusCode), $response);
+            if($statusCode >= 400 && $statusCode <= 499) {
+                $message = $response->toArray(false)['message'];
+                throw new TransportException(sprintf('Unable to send SMS. %s: %s', $statusCode, $message), $response);
+            } else {
+                throw new TransportException(sprintf('Unable to send SMS: Status %s', $statusCode), $response);
+            }
         }
 
         $success = $response->toArray(false);
@@ -111,5 +111,26 @@ class D7Transport extends AbstractTransport {
         $sentMessage->setMessageId($messageId);
 
         return $sentMessage;
+    }
+
+    /**
+     * @throws UnsupportedMessageLengthException
+     */
+    private function getRequestContent($content): array {
+        $body = [];
+        $encoding = mb_detect_encoding($content);
+
+        if($encoding === 'UTF-8') {
+            $body['hex_content'] = bin2hex(mb_convert_encoding($content, 'UTF-16'));
+            $body['coding'] = 8;
+        } else {
+            if(strlen($content) > self::MAX_LENGTH) {
+                throw new UnsupportedMessageLengthException($content, self::MAX_LENGTH);
+            }
+
+            $body['content'] = $content;
+        }
+
+        return $body;
     }
 }

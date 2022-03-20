@@ -76,7 +76,7 @@ class D7TransportTest extends TransportTestCase {
                 'more_info' => 'bar',
             ]));
 
-        $client = new MockHttpClient(function (string $method, string $url, array $options = []) use ($response): ResponseInterface {
+        $client = new MockHttpClient(function (string $method, string $url) use ($response): ResponseInterface {
             $this->assertSame('POST', $method);
             $this->assertSame('https://rest-api.d7networks.com/secure/send', $url);
 
@@ -137,4 +137,48 @@ class D7TransportTest extends TransportTestCase {
     public function invalidMessageLengthProvider(): iterable {
         yield [str_repeat('.', 766)];
     }
+
+    public function unicodeMessageProvider(): iterable {
+        yield ['😂❤😊💩🍆🍑'];
+        yield ['Lorem 👩‍❤️‍💋‍👨 ipsum'];
+    }
+
+    /**
+     * @dataProvider unicodeMessageProvider
+     */
+    public function testUnicodeCharactersIsEncoded(string $message) {
+        $transport = $this->createTransport(null, '33612345678');
+
+        $reflection = new \ReflectionClass(D7Transport::class);
+        $method = $reflection->getMethod('getRequestContent');
+        $method->setAccessible(true);
+
+        $return = $method->invokeArgs($transport, [$message]);
+
+        $this->assertArrayHasKey('coding', $return, 'Expected a coding value to be set for a unicode message');
+        $this->assertEquals($return['coding'], 8);
+    }
+
+    public function asciiMessageProvider(): iterable {
+        yield ['Lorem ipsum dolor sit amet, consectetur adipiscing elit.'];
+        yield [''];
+    }
+
+    /**
+     * @dataProvider asciiMessageProvider
+     */
+    public function testAsciiMessagesAreNotEncodedToUnicode(string $message) {
+        $transport = $this->createTransport(null, '33612345678');
+
+        $reflection = new \ReflectionClass(D7Transport::class);
+        $method = $reflection->getMethod('getRequestContent');
+        $method->setAccessible(true);
+
+        $return = $method->invokeArgs($transport, [$message]);
+
+        $this->assertArrayNotHasKey('coding', $return, 'Should not encode ASCII string');
+        $this->assertArrayHasKey('content', $return, 'Content is missing from the payload');
+        $this->assertEquals($message, $return['content'], 'Message should be untouched when being added to the payload');
+    }
+
 }
