@@ -1,6 +1,8 @@
 Symfony D7 Networks Notifier
 ============================
 
+[![Latest Stable Version](http://poser.pugx.org/steppinghat/symfony-d7-notifier/v)](https://packagist.org/packages/steppinghat/symfony-d7-notifier) [![Total Downloads](http://poser.pugx.org/steppinghat/symfony-d7-notifier/downloads)](https://packagist.org/packages/steppinghat/symfony-d7-notifier) [![License](http://poser.pugx.org/steppinghat/symfony-d7-notifier/license)](https://packagist.org/packages/steppinghat/symfony-d7-notifier) [![Build Status](https://travis-ci.com/SteppingHat/symfony-d7-notifier.svg?branch=master)](https://travis-ci.com/SteppingHat/symfony-d7-notifier)
+
 Provides D7 Networks integration for Symfony Notifier.
 
 ## Installation
