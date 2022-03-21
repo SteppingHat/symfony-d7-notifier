@@ -9,8 +9,6 @@ use Symfony\Component\Notifier\Transport\TransportInterface;
 
 class D7TransportFactory extends AbstractTransportFactory {
 
-    private string $defaultLocale = 'AU'; // TODO: Pull default locale from the container parameter (framework.default_locale)
-
     public function create(Dsn $dsn): TransportInterface {
         $scheme = $dsn->getScheme();
 
@@ -19,11 +17,14 @@ class D7TransportFactory extends AbstractTransportFactory {
         }
 
         $authToken = $this->getUser($dsn);
-        $from = $dsn->getRequiredOption('from');
         $host = $dsn->getHost() === 'default' ? null : $dsn->getHost();
         $port = $dsn->getPort();
 
-        return (new D7Transport($authToken, $from, $this->defaultLocale, $this->client, $this->dispatcher))->setHost($host)->setPort($port);
+        $from = $dsn->getRequiredOption('from');
+        $defaultLocale = $dsn->getRequiredOption('defaultLocale');
+        $allowUnicode = filter_var($dsn->getOption('allowUnicode', true), FILTER_VALIDATE_BOOLEAN);
+
+        return (new D7Transport($authToken, $from, $defaultLocale, $allowUnicode, $this->client, $this->dispatcher))->setHost($host)->setPort($port);
     }
 
     protected function getSupportedSchemes(): array {

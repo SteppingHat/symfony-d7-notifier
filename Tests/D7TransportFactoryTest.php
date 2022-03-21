@@ -14,14 +14,14 @@ class D7TransportFactoryTest extends TransportFactoryTestCase {
 
     public function createProvider(): iterable {
         yield [
-            'd7://host.test?from=0611223344',
-            'd7://authToken@host.test?from=0611223344'
+            'd7://host.test?from=0611223344&defaultLocale=AU',
+            'd7://authToken@host.test?from=0611223344&defaultLocale=AU'
         ];
     }
 
     public function supportsProvider(): iterable {
-        yield [true, 'd7://authToken@default?from=0611223344'];
-        yield [false, 'somethingElse://authToken@default?from=0611223344'];
+        yield [true, 'd7://authToken@default?from=0611223344&defaultLocale=AU'];
+        yield [false, 'somethingElse://authToken@default?from=0611223344&defaultLocale=AU'];
     }
 
     public function missingRequiredOptionProvider(): iterable {
@@ -31,5 +31,6 @@ class D7TransportFactoryTest extends TransportFactoryTestCase {
     public function unsupportedSchemeProvider(): iterable {
         yield ['somethingElse://authToken@default?from=0611223344'];
         yield ['somethingElse://authToken@default'];
+        yield ['somethingElse://authToken@default?defaultLocale=AU'];
     }
 }

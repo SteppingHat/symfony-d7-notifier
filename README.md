@@ -25,13 +25,22 @@ framework:
 Define the D7 DSN environment variable in `.env`
 
 ```
-D7_DSN=d7://TOKEN@default?from=FROM
+D7_DSN=d7://<TOKEN>@default?<PARAMETERS>
 ```
 
-where:
+`TOKEN` is your D7 Networks API token and `PARAMETERS` is a query string that is built with the following parameters:
 
-* `TOKEN` is your D7 Networks token
-* `FROM` is your sender
+| Parameter       | Type   | Description |
+|-----------------|--------|---------------------------------|
+| `from`          | string | The sender number or alphanumeric name. |
+| `defaultLocale` | string | The two-letter country code to convert local numbers to international numbers. |
+| `allowUnicode`  | bool   | Allow messages to be encoded and sent using unicode if UTF-8 characters are present. _Optional, defaults to **true**._ |
+
+A typical example DSN would be:
+
+```
+D7_DSN=d7://abcd1234@default?from=SteppingHat&defaultLocale=AU
+```
 
 and lastly register the service in `services.yaml`
 

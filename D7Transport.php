@@ -29,17 +29,19 @@ class D7Transport extends AbstractTransport {
     private string $authToken;
     private string $from;
     private string $defaultLocale;
+    private bool $allowUnicode;
 
-    public function __construct(string $authToken, string $from, string $defaultLocale, HttpClientInterface $client = null, EventDispatcherInterface $dispatcher = null) {
+    public function __construct(string $authToken, string $from, string $defaultLocale, bool $allowUnicode, HttpClientInterface $client = null, EventDispatcherInterface $dispatcher = null) {
         $this->authToken = $authToken;
-        $this->defaultLocale = $defaultLocale;
         $this->from = $from;
+        $this->defaultLocale = $defaultLocale;
+        $this->allowUnicode = $allowUnicode;
 
         parent::__construct($client, $dispatcher);
     }
 
     public function __toString(): string {
-        return sprintf('d7://%s?from=%s', $this->getEndpoint(), $this->from);
+        return sprintf('d7://%s?from=%s&defaultLocale=%s', $this->getEndpoint(), $this->from, $this->defaultLocale);
     }
 
     public function supports(MessageInterface $message): bool {
@@ -120,7 +122,7 @@ class D7Transport extends AbstractTransport {
         $body = [];
         $encoding = mb_detect_encoding($content);
 
-        if($encoding === 'UTF-8') {
+        if($this->allowUnicode && $encoding === 'UTF-8') {
             $body['hex_content'] = bin2hex(mb_convert_encoding($content, 'UTF-16'));
             $body['coding'] = 8;
         } else {

@@ -19,12 +19,12 @@ class D7TransportTest extends TransportTestCase {
     /**
      * @return D7Transport
      */
-    public function createTransport(HttpClientInterface $client = null, string $from = 'from'): TransportInterface {
-        return new D7Transport('authToken', $from, 'AU', $client ?? $this->createMock(HttpClientInterface::class));
+    public function createTransport(HttpClientInterface $client = null, string $from = 'from', bool $allowUnicode = true): TransportInterface {
+        return new D7Transport('authToken', $from, 'AU', $allowUnicode, $client ?? $this->createMock(HttpClientInterface::class));
     }
 
     public function toStringProvider(): iterable {
-        yield ['d7://rest-api.d7networks.com?from=from', $this->createTransport()];
+        yield ['d7://rest-api.d7networks.com?from=from&defaultLocale=AU', $this->createTransport()];
     }
 
     public function supportedMessagesProvider(): iterable {
@@ -177,6 +177,25 @@ class D7TransportTest extends TransportTestCase {
         $return = $method->invokeArgs($transport, [$message]);
 
         $this->assertArrayNotHasKey('coding', $return, 'Should not encode ASCII string');
+        $this->assertArrayNotHasKey('hex_content', $return, 'Should not insert the message as hex_content');
+        $this->assertArrayHasKey('content', $return, 'Content is missing from the payload');
+        $this->assertEquals($message, $return['content'], 'Message should be untouched when being added to the payload');
+    }
+
+    /**
+     * @dataProvider unicodeMessageProvider
+     */
+    public function testUnicodeCharactersAreNotEncodedWhenUnicodeIsDisallowed(string $message) {
+        $transport = $this->createTransport(null, '33612345678', false);
+
+        $reflection = new \ReflectionClass(D7Transport::class);
+        $method = $reflection->getMethod('getRequestContent');
+        $method->setAccessible(true);
+
+        $return = $method->invoke($transport, $message);
+
+        $this->assertArrayNotHasKey('coding', $return, 'Should not encode string');
+        $this->assertArrayNotHasKey('hex_content', $return, 'Should not insert the message as hex_content');
         $this->assertArrayHasKey('content', $return, 'Content is missing from the payload');
         $this->assertEquals($message, $return['content'], 'Message should be untouched when being added to the payload');
     }
