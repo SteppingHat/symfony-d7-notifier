@@ -1,7 +1,11 @@
 Symfony D7 Networks Notifier
 ============================
 
-[![Latest Stable Version](http://poser.pugx.org/steppinghat/symfony-d7-notifier/v)](https://packagist.org/packages/steppinghat/symfony-d7-notifier) [![Total Downloads](http://poser.pugx.org/steppinghat/symfony-d7-notifier/downloads)](https://packagist.org/packages/steppinghat/symfony-d7-notifier) [![License](http://poser.pugx.org/steppinghat/symfony-d7-notifier/license)](https://packagist.org/packages/steppinghat/symfony-d7-notifier) [![Build Status](https://travis-ci.com/SteppingHat/symfony-d7-notifier.svg?branch=master)](https://travis-ci.com/SteppingHat/symfony-d7-notifier)
+[![Latest Stable Version](http://poser.pugx.org/steppinghat/symfony-d7-notifier/v)](https://packagist.org/packages/steppinghat/symfony-d7-notifier)
+[![Total Downloads](http://poser.pugx.org/steppinghat/symfony-d7-notifier/downloads)](https://packagist.org/packages/steppinghat/symfony-d7-notifier)
+[![License](http://poser.pugx.org/steppinghat/symfony-d7-notifier/license)](https://packagist.org/packages/steppinghat/symfony-d7-notifier)
+
+[![Build Status](https://travis-ci.com/SteppingHat/symfony-d7-notifier.svg?branch=master)](https://travis-ci.com/SteppingHat/symfony-d7-notifier)
 
 Provides D7 Networks integration for Symfony Notifier.
 
@@ -58,8 +62,21 @@ notifier.transport_factory.d7:
 Included for library development purposes is a small set of test cases to assure that basic library functions work as
 expected. These tests can be launched by running the following:
 
+```bash
+composer test
 ```
-$ vendor/bin/phpunit
+
+### GitHub Actions + Dev Container
+
+To test that the GitHub actions work, use the provided devcontainer, which makes use of 
+[act](https://github.com/nektos/act) to emulate the GitHub actions environment locally.
+
+You'll also need the GitHub CLI to use an auth token
+
+Once set, you can invoke the action emulator by running:
+
+```bash
+act -s GITHUB_TOKEN="$(gh auth token)"
 ```
 
 ### License
