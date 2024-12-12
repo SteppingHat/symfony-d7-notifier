@@ -54,7 +54,7 @@ class D7TransportTest extends TransportTestCase {
         yield 'too long' => ['abcdefghijkl'];
 
         // phone numbers
-        yield 'no zero at start if phone number' => ['+0'];
+        yield 'no zero at start of phone number' => ['+0'];
         yield 'phone number to short' => ['+1'];
     }
 
